@@ -1,0 +1,20 @@
+At 640x480 there are 307200 pixels.
+
+We have, say, around 3000 backers.
+
+So that is approximately 100 pixels per brick.
+
+Smallest brick I can imagine is 8x4=32 pixels.
+
+But you need grout, so it's 10x6 pixels
+
+So that's 60 pixels per brick minimum.
+
+So say it gets up to 3500 backers, that's 60x3500=210000 pixels.
+
+So still enough for a strip of ground to walk on for sure.
+
+So actually it's doable? What the fuck? But where? Room after the reception?
+
+
+But may need 10x6 = 80 pixels. With 3500 backers = 80x3500=280000 pixels, meaning there are 27200 pixels left, which is roughly 56 vertical pixels left? Or 42.5? which is either 14 or 10 game pixels in height. Which is getting a bit tight and oppressive :/

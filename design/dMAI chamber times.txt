@@ -1,0 +1,28 @@
+ORIENTATION
+
+13.46 seconds = 134 seconds = roughly 2 minutes
+
+RAMP
+
+Longest minimum = roughly 3 minutes 50
+
+WATER
+
+66 seconds = 660 seconds = roughly 11 minutes -> 8:00
+
+GAZE
+
+54 seconds = 540 seconds = roughly 9 minutes -> 7
+
+LUMINOSITY
+
+50 seconds = 500 seconds = roughly 8 minutes 20 seconds -> 7:20
+
+SOUND
+
+12 seconds + 4*90 = 372 seconds = roughly 6 minutes 10 seconds
+
+WALL
+
+40 seconds = 400 seconds = roughly 6 minutes 40 seconds
+

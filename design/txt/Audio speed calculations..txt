@@ -1,0 +1,59 @@
+At 100 pixels per second it takes 6.4 seconds for a single character to travel the width of the screen.
+
+So every single one will take at least 6.4 seconds + the length in characters * char width / speed.
+
+So a 10 CHAR message takes 6.4 + (10 * 18 / 100) = 6.4 + 1.8 = 8.2 seconds.
+
+So a 100 CHAR message takes 6.4 + (100 * 18 / 100) = 6.4 + 18 = 24.4 seconds. Etc.
+
+Plus we have empty quotes that take 10 seconds.
+
+
+SO:
+
+RAMP:
+250 CHARS = 0:51
+[ Should repeat indefinitely. ]
+
+WATER:
+1400 + 380 + 100 + [4 MINUTES] = 9:40
+
+WALL:
+269 CHARS + 6 MINUTES = 6:55
+
+GAZE:
+780 + 50 + [6 MINUTES] = 8:29
+
+SOUND:
+200 + 40 + 35 + 35 + 45 + [6 MINUTES] = 7:04
+
+LUMINOSITY:
+360 + 50 + [6 MINUTES] = 7:14
+
+FEEDBACK:
+420 = 1:15
+
+
+
+
+TOTAL MINIMUM (excluding RAMP):
+
+	40:36
+
+RAMP MAX LENGTH (IN TERMS OF AI) = 
+
+1 FRAME PER SECOND.
+220 FRAMES
+220 SECONDS
+
+3:40
+
+
+
+TOTAL MINIMUM FOR ALL SIX CHAMBERS + WRITING.
+
+Then add in time at reception (which doesn't really count) and performance (which is arbitrary).
+
+44:20 or so.
+
+Basically asking for about 3/4 hour.

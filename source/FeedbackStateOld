@@ -1,0 +1,272 @@
+package;
+
+import flixel.FlxG;
+import flixel.FlxState;
+import flixel.FlxSprite;
+import flixel.group.FlxGroup;
+import flixel.util.FlxTimer;
+import flixel.text.FlxText;
+
+import flash.net.URLVariables;
+import flash.net.URLRequest;
+import flash.net.URLLoader;
+import flash.net.URLLoaderDataFormat;
+import flash.net.URLRequestMethod;
+import flash.errors.Error;
+
+
+class FeedbackState extends ChamberState
+{
+	private static var PRE_FEEDBACK:Int = 0;
+	private static var FEEDBACK:Int = 1;
+	private static var CONFIRMING:Int = 2;
+	private static var CONFIRM_END:Int = 3;
+	private var state:Int = 0;
+
+	private static var MAX_HEIGHT:Float = 250;
+	private var pageCount:FlxText;
+
+	private var page:Int = 1;
+
+	private var feedbackString:String = "";
+
+	private var feedback:TextEntry;
+	private var feedbackForm:FlxGroup;
+
+	private var desk:Collidable;
+	private var deskTrigger:FlxSprite;
+
+
+	override public function create():Void
+	{
+		super.create();
+
+		FlxG.bgColor = 0xFFFFFFFF;
+
+		avatar = new Avatar(-100,300,GameAssets.SS_LABCOAT_WALKCYCLE_PNG,true);
+		avatar.frameIndex = 20;
+
+		var deskSprite:Sortable = new Sortable(0,0,GameAssets.DESK_PNG);
+		deskSprite.loadGraphic(GameAssets.DESK_PNG,true,false,33,30);
+		Helpers.recolourPersonAsAvatar(deskSprite,true);
+		Helpers.scaleSprite(deskSprite);
+		desk = new Collidable(FlxG.width/2 - deskSprite.width/2,320,deskSprite,0.4);
+
+		var deskTrigger:FlxSprite = new FlxSprite(desk.x,desk.y + desk.height);
+		deskTrigger.makeGraphic(Math.floor(desk.width),20,0xFF00FF00);
+
+		// createFeedbackForm();
+
+		help.setText("Use the ARROW KEYS to move.");
+
+		collidables.add(desk);
+
+		display.add(desk.sprite);
+		display.add(avatar.sprite);
+
+		audio = new HeadsetAudio(GameAssets.LOREM_IPSUM);
+		fg.add(audio);
+		// fg.add(feedbackForm);
+
+		add(avatar);
+
+		wrapEnabled = true;
+		avatarMovementEnabled = true;
+		canSleep = false;
+
+		walkIn();
+	}
+
+
+	private function createFeedbackForm():Void
+	{
+		feedbackForm = new FlxGroup();
+
+		var feedbackSprite:FlxSprite = new FlxSprite(0,0,GameAssets.FEEDBACK_FORM_PNG);
+		Helpers.scaleSprite(feedbackSprite);
+		feedbackSprite.x = FlxG.width/2 - feedbackSprite.width / 2;
+		feedbackSprite.y = FlxG.height/2 - feedbackSprite.height/2;
+
+		var feedbackTitle:FlxText = new FlxText(0,120,FlxG.width,"FEEDBACK FORM",32,true);
+		feedbackTitle.setFormat("Commodore",14,0xFF555555,"center");
+
+		var feedbackMAI:FlxText = new FlxText(0,74,FlxG.width,"dMAI",48,true);
+		feedbackMAI.setFormat("Commodore",42,0xFFFF0000,"center");
+
+		var feedbackMAI2:FlxText = new FlxText(0,422,FlxG.width,"DIGITAL MARINA ABRAMOVIC INSTITUTE",48,true);
+		feedbackMAI2.setFormat("Commodore",6,0xFFFF0000,"center");
+
+		pageCount = new FlxText(0,50,FlxG.width - 170,"PAGE " + page,48,true);
+		pageCount.setFormat("Commodore",12,0xFF555555,"right");
+
+		feedback = new TextEntry(200,150,FlxG.width - 400,1000);
+		feedback.setFormat("Commodore",12,0xFF000000,"left");
+		feedback.disable();
+
+		feedbackForm.add(feedbackSprite);
+		feedbackForm.add(feedbackTitle);
+		feedbackForm.add(feedbackMAI);
+		feedbackForm.add(feedbackMAI2);
+		feedbackForm.add(feedback);
+		feedbackForm.add(pageCount);
+
+		feedbackForm.visible = false;
+	}
+
+
+	override public function destroy():Void
+	{
+		super.destroy();
+	}
+
+
+	override public function update():Void
+	{
+		super.update();
+
+		// handlePageTurns();
+	}	
+
+
+	private function showThanksMessage(t:FlxTimer):Void
+	{
+		message.setup("Thank you.\n\nPress ENTER to get your certificate.");
+		message.setVisible(true);
+		state = CONFIRM_END;
+	}
+
+
+	override private function nextState(t:FlxTimer):Void
+	{
+		FlxG.switchState(new CertificateState());
+	}
+
+
+	private function handlePageTurns():Void
+	{
+		if (feedback.height > MAX_HEIGHT)
+		{
+			var index:Int = feedback.text.lastIndexOf(" ");
+
+			if (index != -1)
+			{
+				var carryString:String = feedback.text.substring(index+1,feedback.text.length);
+				feedbackString += (feedback.text.substring(0,index) + " ");
+				feedback.text = carryString;
+			}
+			else
+			{
+				feedbackString += feedback.text;
+				feedback.text = "";
+			}
+
+			page++;
+		}
+
+		pageCount.text = "PAGE " + page;
+	}
+
+
+	public function sendFeedback():Void
+	{
+		feedbackString += feedback.text;
+
+		var variables:URLVariables = new URLVariables();
+		variables.name = GameAssets.PLAYER_NAME_STRING;
+		variables.feedback = feedbackString;
+
+		var request:URLRequest = new URLRequest("feedback.php");
+		request.method = URLRequestMethod.POST;
+		request.data = variables;
+
+		var loader:URLLoader = new URLLoader();
+		loader.dataFormat = URLLoaderDataFormat.VARIABLES;
+
+		try
+		{
+			loader.load(request);
+		}
+		catch (error:Error) {
+		}
+	}
+
+
+	override public function handleInput():Bool
+	{
+		if (!super.handleInput()) return false;
+
+		if (state == FEEDBACK)
+		{
+			if (FlxG.keyboard.justPressed("ENTER"))
+			{
+				help.visible = false;
+				feedback.disable();
+				state = CONFIRMING;
+
+				if (feedbackString == "" && feedback.text == "")
+				{
+					message.setup("Are you sure you don't want to send any feedback?\n\nPress ENTER to confirm.\n\nPress ESCAPE to go back.");
+				}
+				else
+				{
+					message.setup("Do you want to send this feedback now?\n\nPress ENTER to send it.\n\nPress ESCAPE to keep typing");
+				}
+			}
+		}
+		else if (state == CONFIRMING)
+		{
+			if (FlxG.keyboard.justPressed("ENTER"))
+			{
+				message.setVisible(false);
+
+				if (feedbackString != "")
+				{
+					sendFeedback();
+				}
+				timer.start(1,1,showThanksMessage);
+			}
+			else if (FlxG.keyboard.justPressed("ESCAPE"))
+			{
+				help.visible = true;
+				message.setVisible(false);
+				feedback.reenable();
+				state = FEEDBACK;
+			}
+		}
+		else if (state == CONFIRM_END && FlxG.keyboard.justPressed("ENTER"))
+		{
+			message.setVisible(false);
+			timer.start(2,1,nextState);
+			FlxG.fade(0xFF000000,2);
+		}
+
+		return true;
+	}
+
+
+	override public function handleMessageInput():Bool
+	{
+		if (!super.handleMessageInput()) return false;
+
+		return true;
+	}
+
+
+	override public function handleTriggers():Bool
+	{
+		if (!super.handleTriggers()) return false;
+
+		if (avatar.overlaps(deskTrigger))
+		{
+			avatar.idle();
+			avatarMovementEnabled = false;
+			avatar.visible = false;
+
+			desk.frameIndex = 1;
+		}
+
+		return true;
+	}
+}
+
+
